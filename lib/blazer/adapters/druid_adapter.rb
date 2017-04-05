@@ -1,28 +1,5 @@
 
 
-## A sample query that is known to work.
-
-q={
-  "queryType": "topN",
-  "dataSource": "eventer",
-   "dimension": "page",
-   "threshold": 2,
-  "granularity": "all",
-   "descending": "true",
-   "metric": "value",
-  "filter": nil,
-   "aggregations": [
-                     { "type": "longSum",
-                       "name": "value",
-                       "fieldName": "value" }
-  ],
-  "postAggregations": [
-    
-  ],
-  "intervals": [ "2017-03-03T00:00:00.000/2017-04-06T00:00:00.000" ]
-}
-
-
 module Blazer
   module Adapters
     class DruidAdapter < BaseAdapter
