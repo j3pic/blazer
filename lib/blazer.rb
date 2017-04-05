@@ -13,6 +13,7 @@ require "blazer/adapters/elasticsearch_adapter"
 require "blazer/adapters/mongodb_adapter"
 require "blazer/adapters/presto_adapter"
 require "blazer/adapters/sql_adapter"
+require "blazer/adapters/druid_adapter"
 require "blazer/engine"
 
 module Blazer
@@ -172,3 +173,4 @@ Blazer.register_adapter "elasticsearch", Blazer::Adapters::ElasticsearchAdapter
 Blazer.register_adapter "mongodb", Blazer::Adapters::MongodbAdapter
 Blazer.register_adapter "presto", Blazer::Adapters::PrestoAdapter
 Blazer.register_adapter "sql", Blazer::Adapters::SqlAdapter
+Blazer.register_adapter "druid", Blazer::Adapters::DruidAdapter
