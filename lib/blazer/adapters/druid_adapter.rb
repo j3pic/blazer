@@ -6,7 +6,7 @@ module Blazer
       end
 
       def match_iso_date(str)
-        /[0-9]+-[0-9]{1,2}-[0-9]{1,2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.*/.match(str)
+        str.is_a?(String) && /[0-9]+-[0-9]{1,2}-[0-9]{1,2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.*/.match(str)
       end
       
       def parse_extended_date(str)
@@ -126,27 +126,31 @@ module Blazer
         indices = sort_by_columns.map do |col|
           columns.index(col)
         end
-        cmp = if ascendingp
-                lambda { |a,b| a<b }
-              else
-                lambda { |a,b| a>b }
-              end
+        basic_cmp = if ascendingp
+                      lambda { |a,b| a<b }
+                    else
+                      lambda { |a,b| a>b }
+                    end
+        cmp = lambda { |a,b|
+          if match_iso_date(a)
+            a=a.to_datetime
+            b=b.to_datetime
+          end
+          basic_cmp.call(a,b)
+        } 
         if invalid
           [[],[],"Invalid orderBy column: #{invalid}"]
         else
-          puts "Sorting #{rows} by #{sort_by_columns}"
-          sorted_rows = rows.sort_by do |row_a,row_b|
-            puts "sort_by block called with #{row_a} and #{row_b}"
+          sorted_rows = rows.sort do |row_a,row_b|
             catch :verdict do
               indices.each do |ix|
-                puts "Comparing #{row_a[ix]} with #{row_b[ix]}"
                 if cmp.call(row_a[ix],row_b[ix])
-                  throw :verdict, true
+                  throw :verdict, -1
                 elsif cmp.call(row_b[ix],row_a[ix])
-                  throw :verdict, false
+                  throw :verdict, 1
                 end
               end
-              throw :verdict, false
+              throw :verdict, 0
             end
           end
           [columns,sorted_rows,error]
@@ -176,7 +180,7 @@ module Blazer
                          when nil
                            true
                          when "descending"
-                           true
+                           false
                          else
                            return [[],[],"Invalid orderByDirection: #{parsed_statement[:orderByDirection]}. Valid values are \"ascending\" or \"descending\""]
                          end
