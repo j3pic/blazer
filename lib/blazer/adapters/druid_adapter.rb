@@ -191,7 +191,11 @@ module Blazer
       end
       
       def run_statement(statement, comment)
-        parsed_statement = with_symbol_keys(JSON.parse statement)
+        parsed_statement = begin
+                             with_symbol_keys(JSON.parse statement)
+                           rescue JSON::ParserError => e
+                             return [[],[],e.message]
+                           end
         if parsed_statement[:intervals]
           parsed_statement[:intervals] = parsed_statement[:intervals].map do |interval_string|
             date_interval(interval_string).map do |date|
